@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Active Permits & L Train Alternate Service</title>
+    <meta charset="utf-8" />
+	<link rel="stylesheet" href="leaflet.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="style2.css" type="text/css" media="screen" />	
+</head>
+<style>
+html,
+body {
+	height: 100%
+}
+
+#map {
+	height: 100%
+}
+#button-wrapper {
+	position: absolute;
+	top: 20px;
+	left: 60px;
+	<!-- padding: 4px; -->
+	<!-- border-radius: 0px; -->
+	<!-- background-color: #fff; -->
+}
+.btnStyle {
+	border-radius: 5px;
+	<!-- background-color: #D8D8D8; -->
+	border: 1px solid black;
+	color: black;
+	font-size: 13px;
+	font-weight: bold;
+	padding: 4px;
+	width: 50%;	
+}
+
+
+</style>
+<body>
+	<!-- <div id="map" style="width: 960px; height: 600px"> -->
+	<!-- <div id="map" style="width: 1200px; height: 700px"> -->
+	<div id="map">
+		<div id = "button-wrapper" class="btn-group-vertical" style="z-index: 401">
+				  <div class="btn-group-vertical">
+					<button id="IDNB" type="button" onclick="toggleNB();" class="btnStyle">NB</button>
+					<button id="IDA1Enl" type="button" onclick="toggleA1Enl();" class="btnStyle">Alt1 Enlargement</button>
+					<button id="IDA1" type="button" onclick="toggleA1();" class="btnStyle">Alt1</button>
+					<button id="IDA2" type="button" onclick="toggleA2();" class="btnStyle">Alt2</button>
+					<button id="IDDM" type="button" onclick="toggleDM();" class="btnStyle">DM</button>
+				  </div>
+		</div>	
+	</div>
+
+	
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="./js/leaflet.js"></script>
+	<script src="./js/leaflet.ajax.min.js"></script>
+	<script src="jquery-2.1.1.min.js"></script>
+	<script src="static/chroniton.js"></script>
+	<link href="static/chroniton.css" rel="stylesheet">
+	
+	<link href="build/nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+    <script src="build/nv.d3.js"></script>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+
+		
+		<!-- var map = L.map('map').setView([40.693703, -73.964477], 11); -->
+		var map = L.map('map').setView([40.727057, -73.971895], 14);
+		var toolserver = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+		//var stamen = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {attribution: ''}).addTo(map); /*Stamen.Toner*/
+		var stamen = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {attribution: '© <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'}).addTo(map); /*Stamen.TonerLite*/
+		//var stamen = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {attribution: ''}).addTo(map); /*CartoDB.Positron*/
+		//var stamen = L.tileLayer('http://a.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: ''}).addTo(map); /*OpenStreeMap.Mapkin*/
+		//var stamen = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {attribution: ''}).addTo(map); /*OpenMapSurfer*/
+		//var stamen = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {attribution: ''}).addTo(map); /*Esri.NatGeoWorldMap*/
+		
+		
+		<!-- var info = L.control(); -->
+		<!-- info.onAdd = function(map) { -->
+			<!-- this._div = L.DomUtil.create('div', 'info'); -->
+			<!-- return this._div; -->
+		<!-- }; -->
+		<!-- info.addTo(map); -->
+		
+		<!-- // Add an SVG element to Leaflet’s overlay pane -->
+		<!-- var svg = d3.select(map.getPanes().overlayPane).append("svg"), -->
+			<!-- g = svg.append("g").attr("class", "leaflet-zoom-hide"); -->
+			
+		map.scrollWheelZoom.disable();
+
+		var NB = 0;
+			A1Enl = 0;
+			A1 = 0;
+			A2 = 0;
+			DM = 0;
+			
+		function legendSelect(){
+			$('#IDNB').css('background-color', '#FF5500');
+			$('#IDA1Enl').css('background-color', '#42d4f4');
+			$('#IDA1').css('background-color', '#ce8e8e');
+			$('#IDA2').css('background-color', '#bcb92f');
+			$('#IDDM').css('background-color', '#bc2f4d');
+		}
+
+		/*
+		$("#sqft").click(function(){
+			map.removeLayer(sites);
+			totsqft();
+		})
+		$("#dwell").click(function(){
+			<!-- map.eachLayer(function (layer) { -->
+				<!-- map.removeLayer(layer); -->
+			<!-- }); -->
+			map.removeLayer(sites);
+			propdwell();
+		})
+		*/
+		
+	function init() {
+	
+		$.getJSON("data/LTrainAltRoute.json")
+				.done(function(data) {
+					var myStyle = {
+						"color": "#a00303",
+						"weight": 2,
+						"opacity": 0.8
+					}
+					route = L.geoJson(data, {
+						style: myStyle
+
+					}).addTo(map);
+
+				})
+		
+		$.getJSON("data/ActivePermits_NB.json")
+				.done(function(data) {
+					NB = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+					var prop = feature.properties;
+					var popupContent = "<u> ADDRESS </u> <br>" + 
+									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
+									"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>" +
+									"<br> <u> NUMBER OF STORIES </u> <br> "+ "<b>" +prop.Proposed_S+"</b>" +
+									"<br> <u> TOTAL SQUARE FOOTAGE </u> <br> "+"<b>"+prop.Total_Cons+"</b>";
+						
+							return L.circleMarker (latlng, {
+								fillColor: "#FF5500",
+								weight: 0,
+								radius: 4,
+								fillOpacity: 0.7
+
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+							<!-- .on('mouseover', function(e){ -->
+								<!-- this.openPopup(); -->
+								<!-- this.setStyle({color: "yellow"}); -->
+							<!-- }) -->
+							<!-- .on('mouseout', function(e){ -->
+								<!-- this.closePopup(); -->
+								<!-- this.setStyle({color: "#FF5500"}); -->
+							<!-- }); -->
+						}
+					}).addTo(map);
+
+				})
+				
+		$.getJSON("data/ActivePermits_A1enl.json")
+				.done(function(data) {
+					A1Enl = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+					var prop = feature.properties;
+					var popupContent = "<u> ADDRESS </u> <br>" + 
+									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
+									"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>" +
+									"<br> <u> NUMBER OF STORIES </u> <br> "+ "<b>" +prop.Proposed_S+"</b>" +
+									"<br> <u> ENLARGEMENT SQUARE FOOTAGE </u> <br> "+"<b>"+prop.Enlargem_1+"</b>";
+						
+							return L.circleMarker (latlng, {
+								fillColor: "#42d4f4",
+								weight: 0,
+								radius: 4,
+								fillOpacity: 0.7
+
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+							<!-- .on('mouseover', function(e){ -->
+								<!-- this.openPopup(); -->
+								<!-- this.setStyle({color: "yellow"}); -->
+							<!-- }) -->
+							<!-- .on('mouseout', function(e){ -->
+								<!-- this.closePopup(); -->
+								<!-- this.setStyle({color: "#FF5500"}); -->
+							<!-- }); -->
+						}
+					}).addTo(map);
+
+				})
+				
+		$.getJSON("data/ActivePermits_A1noEnl.json")
+				.done(function(data) {
+					A1 = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+					var prop = feature.properties;
+					var popupContent = "<u> ADDRESS </u> <br>" + 
+									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
+									"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>" +
+									"<br> <u> NUMBER OF STORIES </u> <br> "+ "<b>" +prop.Proposed_S+"</b>";
+						
+							return L.circleMarker (latlng, {
+								fillColor: "#ce8e8e",
+								weight: 0,
+								radius: 3,
+								fillOpacity: 0.7
+
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+							<!-- .on('mouseover', function(e){ -->
+								<!-- this.openPopup(); -->
+								<!-- this.setStyle({color: "yellow"}); -->
+							<!-- }) -->
+							<!-- .on('mouseout', function(e){ -->
+								<!-- this.closePopup(); -->
+								<!-- this.setStyle({color: "#FF5500"}); -->
+							<!-- }); -->
+						}
+					}).addTo(map);
+
+				})
+				
+		$.getJSON("data/ActivePermits_A2.json")
+				.done(function(data) {
+					A2 = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+					var prop = feature.properties;
+					var popupContent = "<u> ADDRESS </u> <br>" + 
+									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
+									"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>" +
+									"<br> <u> NUMBER OF STORIES </u> <br> "+ "<b>" +prop.Proposed_S+"</b>";
+						
+							return L.circleMarker (latlng, {
+								fillColor: "#bcb92f",
+								weight: 0,
+								radius: 2,
+								fillOpacity: 0.5
+
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+							<!-- .on('mouseover', function(e){ -->
+								<!-- this.openPopup(); -->
+								<!-- this.setStyle({color: "yellow"}); -->
+							<!-- }) -->
+							<!-- .on('mouseout', function(e){ -->
+								<!-- this.closePopup(); -->
+								<!-- this.setStyle({color: "#FF5500"}); -->
+							<!-- }); -->
+						}
+					}).addTo(map);
+
+				})
+				
+		$.getJSON("data/ActivePermits_DM.json")
+				.done(function(data) {
+					DM = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+					var prop = feature.properties;
+					var popupContent = "<u> ADDRESS </u> <br>" + 
+									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
+									"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>" +
+									"<br> <u> NUMBER OF STORIES </u> <br> "+ "<b>" +prop.Existing_S+"</b>";
+						
+							return L.circleMarker (latlng, {
+								fillColor: "#bc2f4d",
+								weight: 0,
+								radius: 3,
+								fillOpacity: 0.7
+
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+							<!-- .on('mouseover', function(e){ -->
+								<!-- this.openPopup(); -->
+								<!-- this.setStyle({color: "yellow"}); -->
+							<!-- }) -->
+							<!-- .on('mouseout', function(e){ -->
+								<!-- this.closePopup(); -->
+								<!-- this.setStyle({color: "#FF5500"}); -->
+							<!-- }); -->
+						}
+					}).addTo(map);
+
+				})
+		.fail(function() { alert("There has been a problem loading the data.")});
+		
+		window.toggle = false;
+	}	
+	
+	var count = 1;
+	
+	function toggleNB() {
+		if(!toggle) {
+			map.removeLayer(NB);
+			$('#IDNB').css('background-color', '#DCDCDC');
+		} else {
+			map.addLayer(NB);
+			$('#IDNB').css('background-color', '#FF5500');
+		}
+		toggle = !toggle;
+	}
+	
+	function toggleA1Enl() {
+		if(!toggle) {
+			map.removeLayer(A1Enl);
+			$('#IDA1Enl').css('background-color', '#DCDCDC');
+		} else {
+			map.addLayer(A1Enl);
+			$('#IDA1Enl').css('background-color', '#42d4f4');
+		}
+		toggle = !toggle;
+	}
+	
+	function toggleA1() {
+		if(!toggle) {
+			map.removeLayer(A1);
+			$('#IDA1').css('background-color', '#DCDCDC');
+		} else {
+			map.addLayer(A1);
+			$('#IDA1').css('background-color', '#ce8e8e');
+		}
+		toggle = !toggle;
+	}
+	
+	function toggleA2() {
+		if(!toggle) {
+			map.removeLayer(A2);
+			$('#IDA2').css('background-color', '#DCDCDC');
+		} else {
+			map.addLayer(A2);
+			$('#IDA2').css('background-color', '#bcb92f');
+		}
+		toggle = !toggle;
+	}
+	
+	function toggleDM() {
+		if(!toggle) {
+			map.removeLayer(DM);
+			$('#IDDM').css('background-color', '#DCDCDC');
+		} else {
+			map.addLayer(DM);
+			$('#IDDM').css('background-color', '#bc2f4d');
+		}
+		toggle = !toggle;
+	}
+	
+	
+	
+	
+	window.onload = init(); legendSelect();
+	
+
+	
+	<!-- function selectNB(){ -->
+		<!-- document.getElementById("IDNB").focus(); -->
+		<!-- $('#IDNB').css('background-color', '#FF5500'); -->
+		<!-- //document.getElementById("IDA1Enl").focus(); -->
+	<!-- } -->
+	<!-- function selectA1Enl(){ -->
+		<!-- document.getElementById("IDA1Enl").focus(); -->
+		<!-- $('#IDA1Enl').css('background-color', '#42d4f4'); -->
+	<!-- } -->
+	
+    </script>
+</body>
+</html>
