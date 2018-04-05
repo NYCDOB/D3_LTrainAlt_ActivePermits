@@ -15,40 +15,44 @@ body {
 #map {
 	height: 100%
 }
-#button-wrapper {
+
+.ui {
+	top: 10px;
+	left: 50px;
+	padding: 8px;
 	position: absolute;
-	top: 20px;
-	left: 60px;
-	<!-- padding: 4px; -->
-	<!-- border-radius: 0px; -->
-	<!-- background-color: #fff; -->
+	background-color: #fff;
+	border: 2px solid #707070;
+	border-radius: 7px;
+	width: 140px;
 }
-.btnStyle {
-	border-radius: 5px;
-	<!-- background-color: #D8D8D8; -->
-	border: 1px solid black;
-	color: black;
-	font-size: 13px;
-	font-weight: bold;
-	padding: 4px;
-	width: 50%;	
-}
-
-
 </style>
 <body>
-	<!-- <div id="map" style="width: 960px; height: 600px"> -->
-	<!-- <div id="map" style="width: 1200px; height: 700px"> -->
 	<div id="map">
-		<div id = "button-wrapper" class="btn-group-vertical" style="z-index: 401">
-				  <div class="btn-group-vertical">
-					<button id="IDNB" type="button" onclick="toggleNB();" class="btnStyle">NB</button>
-					<button id="IDA1Enl" type="button" onclick="toggleA1Enl();" class="btnStyle">Alt1 Enlargement</button>
-					<button id="IDA1" type="button" onclick="toggleA1();" class="btnStyle">Alt1</button>
-					<button id="IDA2" type="button" onclick="toggleA2();" class="btnStyle">Alt2</button>
-					<button id="IDDM" type="button" onclick="toggleDM();" class="btnStyle">DM</button>
-				  </div>
-		</div>	
+		<div id="ui-container" class="ui" style="z-index: 401">
+		
+			      <h4>Active Permits</h4>
+				  
+				  <span style="display:inline-block; background-color:#FF5500; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="nb" id="nb" checked="checked"/></span>
+					<label for="nb"></label><span class="en">NB</span>
+				  <br/>
+				  
+				  <span style="display:inline-block; background-color:#42d4f4; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="a1enl" id="a1enl" checked="checked" /></span>
+					<label for="a1"></label><span class="en">A1 Enlargement</span>
+				  <br/>
+				  
+				  <span style="display:inline-block; background-color:#ce8e8e; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="a1" id="a1"/></span>
+					<label for="nb"></label><span class="en">A1</span>
+				  <br/>
+				  
+				  <span style="display:inline-block; background-color:#bcb92f; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="a2" id="a2"/></span>
+					<label for="a1"></label><span class="en">A2</span>
+				  <br/>
+
+				  <span style="display:inline-block; background-color:#80f442; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="dm" id="dm"/></span>
+					<label for="a1"></label><span class="en">DM</span>
+				  <br/>
+		</div>
 	</div>
 
 	
@@ -68,28 +72,9 @@ body {
 
     <script>
 
-		
-		<!-- var map = L.map('map').setView([40.693703, -73.964477], 11); -->
 		var map = L.map('map').setView([40.727057, -73.971895], 14);
 		var toolserver = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
-		//var stamen = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {attribution: ''}).addTo(map); /*Stamen.Toner*/
 		var stamen = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {attribution: '© <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'}).addTo(map); /*Stamen.TonerLite*/
-		//var stamen = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {attribution: ''}).addTo(map); /*CartoDB.Positron*/
-		//var stamen = L.tileLayer('http://a.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: ''}).addTo(map); /*OpenStreeMap.Mapkin*/
-		//var stamen = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {attribution: ''}).addTo(map); /*OpenMapSurfer*/
-		//var stamen = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {attribution: ''}).addTo(map); /*Esri.NatGeoWorldMap*/
-		
-		
-		<!-- var info = L.control(); -->
-		<!-- info.onAdd = function(map) { -->
-			<!-- this._div = L.DomUtil.create('div', 'info'); -->
-			<!-- return this._div; -->
-		<!-- }; -->
-		<!-- info.addTo(map); -->
-		
-		<!-- // Add an SVG element to Leaflet’s overlay pane -->
-		<!-- var svg = d3.select(map.getPanes().overlayPane).append("svg"), -->
-			<!-- g = svg.append("g").attr("class", "leaflet-zoom-hide"); -->
 			
 		map.scrollWheelZoom.disable();
 
@@ -98,29 +83,7 @@ body {
 			A1 = 0;
 			A2 = 0;
 			DM = 0;
-			
-		function legendSelect(){
-			$('#IDNB').css('background-color', '#FF5500');
-			$('#IDA1Enl').css('background-color', '#42d4f4');
-			$('#IDA1').css('background-color', '#ce8e8e');
-			$('#IDA2').css('background-color', '#bcb92f');
-			$('#IDDM').css('background-color', '#bc2f4d');
-		}
-
-		/*
-		$("#sqft").click(function(){
-			map.removeLayer(sites);
-			totsqft();
-		})
-		$("#dwell").click(function(){
-			<!-- map.eachLayer(function (layer) { -->
-				<!-- map.removeLayer(layer); -->
-			<!-- }); -->
-			map.removeLayer(sites);
-			propdwell();
-		})
-		*/
-		
+					
 	function init() {
 	
 		$.getJSON("data/LTrainAltRoute.json")
@@ -237,7 +200,7 @@ body {
 								<!-- this.setStyle({color: "#FF5500"}); -->
 							<!-- }); -->
 						}
-					}).addTo(map);
+					})//.addTo(map);
 
 				})
 				
@@ -271,7 +234,7 @@ body {
 								<!-- this.setStyle({color: "#FF5500"}); -->
 							<!-- }); -->
 						}
-					}).addTo(map);
+					})//.addTo(map);
 
 				})
 				
@@ -288,7 +251,7 @@ body {
 									"<br> <u> NUMBER OF STORIES </u> <br> "+ "<b>" +prop.Existing_S+"</b>";
 						
 							return L.circleMarker (latlng, {
-								fillColor: "#bc2f4d",
+								fillColor: "#80f442",
 								weight: 0,
 								radius: 3,
 								fillOpacity: 0.7
@@ -305,87 +268,63 @@ body {
 								<!-- this.setStyle({color: "#FF5500"}); -->
 							<!-- }); -->
 						}
-					}).addTo(map);
+					})//.addTo(map);
 
 				})
 		.fail(function() { alert("There has been a problem loading the data.")});
-		
-		window.toggle = false;
 	}	
-	
-	var count = 1;
-	
-	function toggleNB() {
-		if(!toggle) {
-			map.removeLayer(NB);
-			$('#IDNB').css('background-color', '#DCDCDC');
-		} else {
-			map.addLayer(NB);
-			$('#IDNB').css('background-color', '#FF5500');
-		}
-		toggle = !toggle;
-	}
-	
-	function toggleA1Enl() {
-		if(!toggle) {
-			map.removeLayer(A1Enl);
-			$('#IDA1Enl').css('background-color', '#DCDCDC');
-		} else {
-			map.addLayer(A1Enl);
-			$('#IDA1Enl').css('background-color', '#42d4f4');
-		}
-		toggle = !toggle;
-	}
-	
-	function toggleA1() {
-		if(!toggle) {
-			map.removeLayer(A1);
-			$('#IDA1').css('background-color', '#DCDCDC');
-		} else {
-			map.addLayer(A1);
-			$('#IDA1').css('background-color', '#ce8e8e');
-		}
-		toggle = !toggle;
-	}
-	
-	function toggleA2() {
-		if(!toggle) {
-			map.removeLayer(A2);
-			$('#IDA2').css('background-color', '#DCDCDC');
-		} else {
-			map.addLayer(A2);
-			$('#IDA2').css('background-color', '#bcb92f');
-		}
-		toggle = !toggle;
-	}
-	
-	function toggleDM() {
-		if(!toggle) {
-			map.removeLayer(DM);
-			$('#IDDM').css('background-color', '#DCDCDC');
-		} else {
-			map.addLayer(DM);
-			$('#IDDM').css('background-color', '#bc2f4d');
-		}
-		toggle = !toggle;
-	}
-	
-	
-	
-	
-	window.onload = init(); legendSelect();
-	
+		
+	function initCheckboxes() {
+    var checkboxPermits = $('input.permit:checkbox'),
+          $nb = $('#nb'),
+		  $a1enl = $('#a1enl'),
+          $a1 = $('#a1'),
+          $a2 = $('#a2'),
+          $dm = $('#dm');
 
+		$nb.change(function(){
+		  if ($nb.is(':checked')){
+			map.addLayer(NB);
+		  } else {
+			map.removeLayer(NB);
+		  };
+		});
+		
+		$a1enl.change(function(){
+		  if ($a1enl.is(':checked')){
+			map.addLayer(A1Enl);
+		  } else {
+			map.removeLayer(A1Enl);
+		  };
+		});
+		
+		$a1.change(function(){
+		  if ($a1.is(':checked')){
+			map.addLayer(A1);
+		  } else {
+			map.removeLayer(A1);
+		  };
+		});
+		
+		$a2.change(function(){
+		  if ($a2.is(':checked')){
+			map.addLayer(A2);
+		  } else {
+			map.removeLayer(A2);
+		  };
+		});
+		
+		$dm.change(function(){
+		  if ($dm.is(':checked')){
+			map.addLayer(DM);
+		  } else {
+			map.removeLayer(DM);
+		  };
+		});
+	}
 	
-	<!-- function selectNB(){ -->
-		<!-- document.getElementById("IDNB").focus(); -->
-		<!-- $('#IDNB').css('background-color', '#FF5500'); -->
-		<!-- //document.getElementById("IDA1Enl").focus(); -->
-	<!-- } -->
-	<!-- function selectA1Enl(){ -->
-		<!-- document.getElementById("IDA1Enl").focus(); -->
-		<!-- $('#IDA1Enl').css('background-color', '#42d4f4'); -->
-	<!-- } -->
+	
+	window.onload = init(); initCheckboxes();
 	
     </script>
 </body>
