@@ -53,6 +53,16 @@ body {
 				  <span style="display:inline-block; background-color:#80f442; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="dm" id="dm"/></span>
 					<label for="a1"></label><span class="en">DM</span>
 				  <br/>
+				  
+				<hr/>
+
+			      <h4>Job Filings</h4>
+				  <h5>(Within 300 Feet of L Train Alternate Route)</h5>
+
+				  <span style="display:inline-block; background-color:#777777; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil" id="jfil"/></span>
+					<label for="nb"></label><span class="en">Job Filings: 2018 YTD</span>				  
+				  
+				
 		</div>
 	</div>
 
@@ -77,13 +87,14 @@ body {
 		var toolserver = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
 		var stamen = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {attribution: '© <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'}).addTo(map); /*Stamen.TonerLite*/
 			
-		
+		map.scrollWheelZoom.disable();
 
 		var NB = 0;
 			A1Enl = 0;
 			A1 = 0;
 			A2 = 0;
 			DM = 0;
+			JFIL = 0;
 					
 	function init() {
 	
@@ -272,6 +283,40 @@ body {
 					})//.addTo(map);
 
 				})
+				
+		$.getJSON("data/JobFilings_010118_041018_300ft.json")
+				.done(function(data) {
+					JFIL = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+					var prop = feature.properties;
+					var popupContent = "<u> ADDRESS </u> <br>" + 
+									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
+									"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>";
+						
+							return L.circleMarker (latlng, {
+								fillColor: "#777777",
+								weight: 0,
+								radius: 2,
+								fillOpacity: 0.7
+
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+							<!-- .on('mouseover', function(e){ -->
+								<!-- this.openPopup(); -->
+								<!-- this.setStyle({color: "yellow"}); -->
+							<!-- }) -->
+							<!-- .on('mouseout', function(e){ -->
+								<!-- this.closePopup(); -->
+								<!-- this.setStyle({color: "#FF5500"}); -->
+							<!-- }); -->
+						}
+					})//.addTo(map);
+
+				})
+				
 		.fail(function() { alert("There has been a problem loading the data.")});
 	}	
 		
@@ -281,7 +326,8 @@ body {
 		  $a1enl = $('#a1enl'),
           $a1 = $('#a1'),
           $a2 = $('#a2'),
-          $dm = $('#dm');
+          $dm = $('#dm'),
+		  $jfil = $('#jfil');
 
 		$nb.change(function(){
 		  if ($nb.is(':checked')){
@@ -320,6 +366,13 @@ body {
 			map.addLayer(DM);
 		  } else {
 			map.removeLayer(DM);
+		  };
+		});
+		$jfil.change(function(){
+		  if ($jfil.is(':checked')){
+			map.addLayer(JFIL);
+		  } else {
+			map.removeLayer(JFIL);
 		  };
 		});
 	}
