@@ -26,6 +26,26 @@ body {
 	border-radius: 7px;
 	width: 300px;
 }
+.NB-div-icon {
+	background: #FF5500;
+	opacity: 0.7;
+}
+.A1Enl-div-icon {
+	background: #42d4f4;
+	opacity: 0.7;
+}
+.A1-div-icon {
+	background: #ce8e8e;
+	opacity: 0.7;
+}
+.A2-div-icon {
+	background: #bcb92f;
+	opacity: 0.7;
+}
+.DM-div-icon {
+	background: #80f442;
+	opacity: 0.7;
+}
 </style>
 <body>
 	<div id="map">
@@ -56,12 +76,28 @@ body {
 				  
 				<hr/>
 
-			      <h4>Job Filings</h4>
-				  <h5>(Within 300 Feet of L Train Alternate Route)</h5>
+				<h4>Job Filings (2018 YTD)</h4>
+				<h5>(Within 300 Feet of L Train Alternate Route)</h5>
 
-				  <span style="display:inline-block; background-color:#777777; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil" id="jfil"/></span>
-					<label for="nb"></label><span class="en">Job Filings: 2018 YTD</span>				  
+				<span style="display:inline-block; background-color:#FF5500; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil_nb" id="jfil_nb"/></span>
+					<label for="jfil_nb"></label><span class="en">NB</span>	
+				<br/>
+
+				<span style="display:inline-block; background-color:#42d4f4; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil_a1enl" id="jfil_a1enl"/></span>
+					<label for="jfil_a1enl"></label><span class="en">A1 Enlargement</span>	
+				<br/>
 				  
+				<span style="display:inline-block; background-color:#ce8e8e; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil_a1" id="jfil_a1"/></span>
+					<label for="jfil_a1"></label><span class="en">A1</span>	
+				<br/> 
+				
+				<span style="display:inline-block; background-color:#bcb92f; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil_a2" id="jfil_a2"/></span>
+					<label for="jfil_a2"></label><span class="en">A2</span>	
+				<br/> 
+				
+				<span style="display:inline-block; background-color:#80f442; padding:0px; margin:0px; height:13px; width:13px; overflow:hidden"><input type="checkbox" style="opacity:0.50;padding:0px;margin:0px" name="permit" class="regular-checkbox" value="jfil_dm" id="jfil_dm"/></span>
+					<label for="jfil_dm"></label><span class="en">DM</span>	
+				<br/>
 				
 		</div>
 	</div>
@@ -80,22 +116,26 @@ body {
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+	
     <script>
 
 		var map = L.map('map').setView([40.727057, -73.971895], 14);
 		var toolserver = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
 		var stamen = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {attribution: '© <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'}).addTo(map); /*Stamen.TonerLite*/
 			
-		map.scrollWheelZoom.disable();
+		//map.scrollWheelZoom.disable();
 
 		var NB = 0;
 			A1Enl = 0;
 			A1 = 0;
 			A2 = 0;
 			DM = 0;
-			JFIL = 0;
-					
+			JFIL_NB = 0;
+			JFIL_A1ENL = 0;
+			JFIL_A1 = 0;
+			JFIL_A2 = 0;
+			JFIL_DM = 0;
+		
 	function init() {
 	
 		$.getJSON("data/LTrainAltRoute.json")
@@ -117,7 +157,8 @@ body {
 					NB = L.geoJson(data, {
 						pointToLayer: function (feature, latlng) {
 					var prop = feature.properties;
-					var popupContent = "<u> ADDRESS </u> <br>" + 
+					var popupContent = "<b><i>ACTIVE PERMIT:</i></b> <br>" +
+									"<u> ADDRESS </u> <br>" + 
 									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
 									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
 									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
@@ -152,7 +193,8 @@ body {
 					A1Enl = L.geoJson(data, {
 						pointToLayer: function (feature, latlng) {
 					var prop = feature.properties;
-					var popupContent = "<u> ADDRESS </u> <br>" + 
+					var popupContent = "<b><i>ACTIVE PERMIT:</i></b> <br>" +
+									"<u> ADDRESS </u> <br>" + 
 									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
 									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
 									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
@@ -187,7 +229,8 @@ body {
 					A1 = L.geoJson(data, {
 						pointToLayer: function (feature, latlng) {
 					var prop = feature.properties;
-					var popupContent = "<u> ADDRESS </u> <br>" + 
+					var popupContent = "<b><i>ACTIVE PERMIT:</i></b> <br>" +
+									"<u> ADDRESS </u> <br>" + 
 									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
 									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
 									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
@@ -221,7 +264,8 @@ body {
 					A2 = L.geoJson(data, {
 						pointToLayer: function (feature, latlng) {
 					var prop = feature.properties;
-					var popupContent = "<u> ADDRESS </u> <br>" + 
+					var popupContent = "<b><i>ACTIVE PERMIT:</i></b> <br>" +
+									"<u> ADDRESS </u> <br>" + 
 									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
 									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
 									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
@@ -231,7 +275,7 @@ body {
 							return L.circleMarker (latlng, {
 								fillColor: "#bcb92f",
 								weight: 0,
-								radius: 2,
+								radius: 3,
 								fillOpacity: 0.5
 
 							}).on('click', function(e){
@@ -255,7 +299,8 @@ body {
 					DM = L.geoJson(data, {
 						pointToLayer: function (feature, latlng) {
 					var prop = feature.properties;
-					var popupContent = "<u> ADDRESS </u> <br>" + 
+					var popupContent = "<b><i>ACTIVE PERMIT:</i></b> <br>" +
+									"<u> ADDRESS </u> <br>" + 
 									"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
 									"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
 									"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.Job_Type+"</b>" +
@@ -283,7 +328,7 @@ body {
 					})//.addTo(map);
 
 				})
-				
+		/*		
 		$.getJSON("data/JobFilings_010118_041018_300ft.json")
 				.done(function(data) {
 					JFIL = L.geoJson(data, {
@@ -316,7 +361,147 @@ body {
 					})//.addTo(map);
 
 				})
-				
+				*/
+		$.getJSON("data/JobFilings_300ft_010118_041218_NB.json")
+				.done(function(data) {
+					JFIL_NB = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+							var prop = feature.properties;
+							var popupContent = "<b><i>JOB FILING:</i></b> <br>" +
+											"<u> ADDRESS </u> <br>" + 
+											"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+											"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+											"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.TYPE+"</b>" +
+											"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>";
+							var smallIcon = L.DivIcon.extend({
+								options: {
+									iconSize: [6, 6],
+									className: 'NB-div-icon'
+								}
+							});
+							return L.marker(latlng, {
+								icon: new smallIcon()
+							
+								
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+						}
+					})//.addTo(map);
+
+				})
+		$.getJSON("data/JobFilings_300ft_010118_041218_A1Enl.json")
+				.done(function(data) {
+					JFIL_A1ENL = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+							var prop = feature.properties;
+							var popupContent = "<b><i>JOB FILING:</i></b> <br>" +
+											"<u> ADDRESS </u> <br>" + 
+											"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+											"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+											"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.TYPE+"</b>" +
+											"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>";
+							var smallIcon = L.DivIcon.extend({
+								options: {
+									iconSize: [6, 6],
+									className: 'A1Enl-div-icon'
+								}
+							});
+							return L.marker(latlng, {
+								icon: new smallIcon()
+							
+								
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+						}
+					})//.addTo(map);
+
+				})
+		$.getJSON("data/JobFilings_300ft_010118_041218_A1.json")
+				.done(function(data) {
+					JFIL_A1 = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+							var prop = feature.properties;
+							var popupContent = "<b><i>JOB FILING:</i></b> <br>" +
+											"<u> ADDRESS </u> <br>" + 
+											"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+											"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+											"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.TYPE+"</b>" +
+											"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>";
+							var smallIcon = L.DivIcon.extend({
+								options: {
+									iconSize: [6, 6],
+									className: 'A1-div-icon'
+								}
+							});
+							return L.marker(latlng, {
+								icon: new smallIcon()
+							
+								
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+						}
+					})//.addTo(map);
+
+				})
+		$.getJSON("data/JobFilings_300ft_010118_041218_A2.json")
+				.done(function(data) {
+					JFIL_A2 = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+							var prop = feature.properties;
+							var popupContent = "<b><i>JOB FILING:</i></b> <br>" +
+											"<u> ADDRESS </u> <br>" + 
+											"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+											"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+											"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.TYPE+"</b>" +
+											"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>";
+							var smallIcon = L.DivIcon.extend({
+								options: {
+									iconSize: [4, 4],
+									className: 'A2-div-icon'
+								}
+							});
+							return L.marker(latlng, {
+								icon: new smallIcon()
+							
+								
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+						}
+					})//.addTo(map);
+
+				})
+		$.getJSON("data/JobFilings_300ft_010118_041218_DM.json")
+				.done(function(data) {
+					JFIL_DM = L.geoJson(data, {
+						pointToLayer: function (feature, latlng) {
+							var prop = feature.properties;
+							var popupContent = "<b><i>JOB FILING:</i></b> <br>" +
+											"<u> ADDRESS </u> <br>" + 
+											"<b>" + prop.Address + ", " + prop.Borough_Na + "</b>" +
+											"<br> <u> BIN </u> <br> "+ "<b>"+prop.BIN_Number+"</b>" +
+											"<br> <u> JOB TYPE </u> <br> "+ "<b>"+prop.TYPE+"</b>" +
+											"<br> <u> JOB NUMBER </u> <br> "+ "<b>" +prop.Job_Number+"</b>";
+							var smallIcon = L.DivIcon.extend({
+								options: {
+									iconSize: [6, 6],
+									className: 'DM-div-icon'
+								}
+							});
+							return L.marker(latlng, {
+								icon: new smallIcon()
+							
+								
+							}).on('click', function(e){
+								this.bindPopup(popupContent).openPopup();
+							})
+						}
+					})//.addTo(map);
+
+				})
 		.fail(function() { alert("There has been a problem loading the data.")});
 	}	
 		
@@ -327,7 +512,11 @@ body {
           $a1 = $('#a1'),
           $a2 = $('#a2'),
           $dm = $('#dm'),
-		  $jfil = $('#jfil');
+		  $jfil_nb = $('#jfil_nb'),
+		  $jfil_a1enl = $('#jfil_a1enl'),
+		  $jfil_a1 = $('#jfil_a1'),
+		  $jfil_a2 = $('#jfil_a2'),
+		  $jfil_dm = $('#jfil_dm');
 
 		$nb.change(function(){
 		  if ($nb.is(':checked')){
@@ -368,11 +557,39 @@ body {
 			map.removeLayer(DM);
 		  };
 		});
-		$jfil.change(function(){
-		  if ($jfil.is(':checked')){
-			map.addLayer(JFIL);
+		$jfil_nb.change(function(){
+		  if ($jfil_nb.is(':checked')){
+			map.addLayer(JFIL_NB);
 		  } else {
-			map.removeLayer(JFIL);
+			map.removeLayer(JFIL_NB);
+		  };
+		});
+		$jfil_a1enl.change(function(){
+		  if ($jfil_a1enl.is(':checked')){
+			map.addLayer(JFIL_A1ENL);
+		  } else {
+			map.removeLayer(JFIL_A1ENL);
+		  };
+		});
+		$jfil_a1.change(function(){
+		  if ($jfil_a1.is(':checked')){
+			map.addLayer(JFIL_A1);
+		  } else {
+			map.removeLayer(JFIL_A1);
+		  };
+		});
+		$jfil_a2.change(function(){
+		  if ($jfil_a2.is(':checked')){
+			map.addLayer(JFIL_A2);
+		  } else {
+			map.removeLayer(JFIL_A2);
+		  };
+		});
+		$jfil_dm.change(function(){
+		  if ($jfil_dm.is(':checked')){
+			map.addLayer(JFIL_DM);
+		  } else {
+			map.removeLayer(JFIL_DM);
 		  };
 		});
 	}
